@@ -15,7 +15,7 @@ export default class Platforms {
     for (let i = 0; i < count; i++) {
       const x = Phaser.Math.Between(100, this.scene.cameras.main.width - 100);
       const y = Phaser.Math.Between(100, this.scene.cameras.main.height - 100);
-      const width = Phaser.Math.FloatBetween(50, 200); // Adjust width based on your game's design
+      const width = Phaser.Math.FloatBetween(50, 400); // Adjust width based on your game's design
       const height = Phaser.Math.FloatBetween(10, 30); // Adjust height based on your game's design
       const rotation = Phaser.Math.FloatBetween(-0.25, 0.25); // Rotation in radians
 
