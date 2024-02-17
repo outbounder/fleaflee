@@ -8,6 +8,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
 
   <link rel="stylesheet" href="https://unpkg.com/modern-css-reset/dist/reset.min.css" />
+  <link rel="stylesheet" href="./index.css" />
 </head>
 
 <body>
@@ -16,7 +17,7 @@
   <script type="importmap">
     {
       "imports": {
-        "melonjs": "https://cdn.jsdelivr.net/npm/melonjs/+esm"
+        "phaser": "https://cdn.jsdelivr.net/npm/phaser@3/dist/phaser.esm.js"
       }
     }
   </script>
@@ -25,13 +26,8 @@
 
   <!-- Bootstrap -->
   <script type="module">
-    import { device, Container } from "melonjs";
-    import onload from "./js/index.js";
-
-    device.onReady(() => {
-      device.pauseOnBlur = false;
-      onload();
-    });
+    import run from './index.js'
+    run()
   </script>
 </body>
 
