@@ -7,6 +7,7 @@ export default class EndScene extends Phaser.Scene {
 
   init(data) {
     this.winnerText = data.winner;
+    this.nextScene = data.nextScene;
   }
 
   create() {
@@ -39,7 +40,7 @@ export default class EndScene extends Phaser.Scene {
         .setOrigin(0.5, 0.5);
       this.input.keyboard.on("keydown", () => {
         // You can directly start the GameScene, or go to the BeginScene if you have one
-        this.scene.start("GameScene");
+        this.scene.start(this.nextScene);
       });
     });
   }

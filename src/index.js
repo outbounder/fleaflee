@@ -1,5 +1,6 @@
 import * as Phaser from "phaser";
-import GameScene from "./scenes/GameScene.js";
+import HotSeatGameScene from "./scenes/HotSeatGameScene.js";
+import GameVsAiScene from "./scenes/GameVsAiScene.js";
 import EndScene from "./scenes/EndScene.js";
 import BeginScene from "./scenes/BeginScene.js";
 
@@ -20,7 +21,7 @@ export default function run() {
     parent: "screen", // ID of the target div
     width: width,
     height: height,
-    scene: [BeginScene, GameScene, EndScene],
+    scene: [BeginScene, GameVsAiScene, HotSeatGameScene, EndScene],
     scale: {
       mode: Phaser.Scale.RESIZE, // This scale mode will resize the canvas to fit the parent size
       parent: "screen",

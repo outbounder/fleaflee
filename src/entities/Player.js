@@ -15,7 +15,7 @@ export default class Player extends Phaser.Physics.Matter.Sprite {
     this.isCharging = false;
     this.isJumping = false;
     this.chargeDirection = "right";
-    this.maxJumpSpeed = 0.06; // Adjusted for Matter.js force application
+    this.maxJumpSpeed = 0.02; // Adjusted for Matter.js force application
     this.scheduledForce = null; // used as buffer to apply force
     this.lastScoreTime = 0; // used to prevent multiple scoring
 

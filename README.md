@@ -17,11 +17,7 @@ npm run dev
 
 ## Contributions
 
-Any are welcome. I'll accept those which make sense.
-
-## Issues
-
-Report them in https://github.com/outbounder/fleaflee/issues but don't expect that I'll fix 'em.
+Issues, PRs & support are welcome.
 
 ## Copyright
 
