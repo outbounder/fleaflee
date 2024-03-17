@@ -37,13 +37,12 @@ export default class GameScene extends Phaser.Scene {
     this.platforms.createPlatforms();
 
     // Initialize two players with type 'p1' and 'p2'
-    this.player1 = new Player(this, 100, 300, "p1");
-    this.player2 = new Player(this, 700, 300, "p2");
+    this.player1 = new Player(this, 100, 300, "blue");
+    this.player2 = new Player(this, 700, 300, "green");
 
     this.collisionManager = new PlayerCollisionManager(this, this.scoreState);
-    this.collisionManager.setupCollisions(this.player1);
-    this.collisionManager.setupCollisions(this.player2);
     this.collisionManager.setupBounds();
+    this.collisionManager.setupCollisions();
 
     this.keys = {
       left: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A),

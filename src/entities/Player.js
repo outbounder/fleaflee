@@ -3,8 +3,8 @@ import * as Phaser from "phaser";
 
 export default class Player extends Phaser.Physics.Matter.Sprite {
   constructor(scene, x, y, type) {
-    const textureName = `flea0${type}`;
-    super(scene.matter.world, x, y, textureName, null, {
+    const textureName = `${type}_body_squircle.png`;
+    super(scene.matter.world, x, y, "shape-characters", textureName, {
       label: "player",
     });
 
@@ -20,17 +20,23 @@ export default class Player extends Phaser.Physics.Matter.Sprite {
     this.lastScoreTime = 0; // used to prevent multiple scoring
 
     // Use the texture's frame to set the sprite's scale properly
-    const texture = this.scene.textures.get(textureName);
-    this.setScale(0.75); // Adjust the scale based on the texture size
+    const texture = this.scene.textures.getFrame(
+      "shape-characters",
+      textureName
+    );
+    this.setScale(0.25); // Adjust the scale based on the texture size
 
     // Set the origin to the bottom center if necessary to ensure the player lands on their feet
     this.setOrigin(0.5, 1);
 
     // Optionally, adjust the body size if the default is not appropriate
-    this.setRectangle(texture.width, texture.height, {
+    this.setRectangle((texture.width * 25) / 100, (texture.height * 25) / 100, {
       label: "player",
     });
     this.setFixedRotation(); // Prevent body from rotating
+
+    // Load jump sound
+    this.jumpSound = this.scene.sound.add("jump");
   }
 
   startCharge(direction) {
@@ -43,34 +49,39 @@ export default class Player extends Phaser.Physics.Matter.Sprite {
 
   charge() {
     if (!this.isCharging || this.isJumping) return;
-    this.chargeLevel = Math.min(this.chargeLevel + 0.0005, this.maxJumpSpeed);
+    this.chargeLevel = Math.min(this.chargeLevel + 0.00025, this.maxJumpSpeed);
     const chargePercentage = this.chargeLevel / this.maxJumpSpeed;
 
+    console.log("CHARGE", this.type, chargePercentage);
     // Change texture based on charge level
     if (chargePercentage >= 0.6) {
-      this.setTexture(`flea2${this.type}`);
+      this.setTexture("shape-characters", `${this.type}_body_rhombus.png`);
     } else if (chargePercentage >= 0.3) {
-      this.setTexture(`flea1${this.type}`);
+      this.setTexture("shape-characters", `${this.type}_body_circle.png`);
     }
   }
 
   jump() {
     if (!this.isCharging) return;
+    console.log("JUMP", this.type);
     const jumpDirection = this.chargeDirection === "left" ? -1 : 1;
     this.applyForce({
       x: jumpDirection * this.chargeLevel,
       y: -this.chargeLevel,
     });
-    this.setTexture(`flea-j${this.type}`);
+    this.setTexture("shape-characters", `${this.type}_body_square.png`);
     this.isCharging = false;
     this.chargeLevel = 0;
     this.isJumping = true;
+
+    this.jumpSound.play();
   }
 
   land() {
+    console.log("LAND", this.type);
     this.isJumping = false;
     this.chargeLevel = 0;
-    this.setTexture(`flea0${this.type}`); // Reset to normal state
+    this.setTexture("shape-characters", `${this.type}_body_squircle.png`); // Reset to normal state
   }
 
   scheduleForce(force) {

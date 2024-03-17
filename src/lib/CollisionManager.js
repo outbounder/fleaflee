@@ -4,6 +4,9 @@ export default class CollisionManager {
   constructor(scene, scoreState) {
     this.scene = scene;
     this.scoreState = scoreState;
+
+    // Load score sound
+    this.scoreSound = this.scene.sound.add("fleasHit");
   }
 
   setupBounds() {
@@ -21,45 +24,50 @@ export default class CollisionManager {
     });
   }
 
-  setupCollisions(player) {
+  setupCollisions() {
     this.scene.matter.world.on("collisionstart", (event) => {
       event.pairs.forEach((pair) => {
-        this.handleCollision(pair, player);
+        this.handleCollision(pair);
       });
     });
   }
-  handleCollision(pair, player) {
+  handleCollision(pair) {
     const { bodyA, bodyB } = pair;
 
-    // Ensure we're working with the GameObjects, which should have the 'label' property
-    const gameObjectA = bodyA.gameObject;
-    const gameObjectB = bodyB.gameObject;
-
     // Check if both objects involved are players
-    if (
-      gameObjectA &&
-      gameObjectB &&
-      bodyA.label === "player" &&
-      bodyB.label === "player"
-    ) {
+    if (bodyA.label === "player" && bodyB.label === "player") {
+      // Ensure we're working with the GameObjects, which should have the 'label' property
+      const gameObjectA = bodyA.gameObject;
+      const gameObjectB = bodyB.gameObject;
+
       // Ensure we're not dealing with the same player object
       if (gameObjectA !== gameObjectB) {
         this.determineScorerAndBounce(gameObjectA, gameObjectB);
+        this.scoreSound.play();
         return; // Exit early to avoid further checks
       }
     }
 
     // Handle collisions with "solid" objects for the original player
-    const otherBody = bodyA.gameObject === player ? bodyB : bodyA;
+    let player, other;
+    if (bodyA.label === "player") {
+      player = bodyA.gameObject;
+      other = bodyB;
+    } else if (bodyB && bodyB.label === "player") {
+      player = bodyB.gameObject;
+      other = bodyA;
+    }
+
     if (
-      otherBody &&
-      (otherBody.label === "platform" ||
-        otherBody.label === "worldborder" ||
-        otherBody.label === "worldfloor" ||
-        otherBody.label === "worldceiling")
+      player &&
+      other &&
+      (other.label === "platform" ||
+        other.label === "worldborder" ||
+        other.label === "worldfloor" ||
+        other.label === "worldceiling")
     ) {
-      if (otherBody.label === "worldborder") {
-        if (otherBody.position.x > player.x) {
+      if (other.label === "worldborder") {
+        if (other.position.x > player.x) {
           player.scheduleForce({ x: -0.0005, y: 0 });
         } else {
           player.scheduleForce({ x: 0.0005, y: 0 });

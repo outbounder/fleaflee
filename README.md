@@ -24,3 +24,11 @@ Issues, PRs & support are welcome.
 I don't know who owns the rights of the original game. Google is not helping too. If you find it let me know and I'll either remove this repo or refactor it to comply with any copyright requirements. 
 
 Until otherwise stated assume this as MIT licensed.
+
+
+## credits
+
+* https://www.optimizerai.xyz/ for the sound effects
+* https://www.kenney.nl/ for the sprites
+
+
