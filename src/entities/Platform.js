@@ -1,6 +1,6 @@
 import * as Phaser from "phaser";
 
-export default class PlatformEntity extends Phaser.Physics.Matter.Sprite {
+export default class PlatformEntity extends Phaser.Physics.Matter.Image {
   constructor(scene, x, y, texture, frame, width, height, angle = 0) {
     super(scene.matter.world, x, y, texture, frame);
 

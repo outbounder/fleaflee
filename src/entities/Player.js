@@ -52,7 +52,6 @@ export default class Player extends Phaser.Physics.Matter.Sprite {
     this.chargeLevel = Math.min(this.chargeLevel + 0.00025, this.maxJumpSpeed);
     const chargePercentage = this.chargeLevel / this.maxJumpSpeed;
 
-    console.log("CHARGE", this.type, chargePercentage);
     // Change texture based on charge level
     if (chargePercentage >= 0.6) {
       this.setTexture("shape-characters", `${this.type}_body_rhombus.png`);

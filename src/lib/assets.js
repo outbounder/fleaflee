@@ -1,7 +1,11 @@
 // lib/assets.js
 const gameSceneAssets = {
   images: [
-    // { name: "shape-characters", path: "img/shape-characters.png" }
+    // { name: "shape-characters", path: "img/shape-characters.png" },
+    {
+      name: "tree",
+      path: "img/kenney_shape-characters/PNG/Default/tile_background_tree_large.png",
+    },
   ],
   sounds: [
     { name: "jump", path: "sfx/sound_of_a_jumping_frog_1.wav" },

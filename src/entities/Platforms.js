@@ -1,10 +1,12 @@
 import * as Phaser from "phaser";
 import PlatformEntity from "./Platform.js";
+import TreeDecorator from "./TreeDecorator.js";
 
 export default class Platforms {
   constructor(scene) {
     this.scene = scene;
     this.values = [];
+    this.treeDecorator = new TreeDecorator(scene);
   }
 
   toArray() {
@@ -30,6 +32,7 @@ export default class Platforms {
         height,
         rotation
       );
+      this.treeDecorator.decoratePlatform(platform);
       this.values.push(platform);
     }
   }

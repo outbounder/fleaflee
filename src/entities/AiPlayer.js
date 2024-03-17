@@ -38,6 +38,8 @@ export default class AiPlayer extends Player {
       this.performRandomJump();
       this.jumpCooldown = 1000; // Shorter cooldown for random jumps
     }
+
+    super.update();
   }
 
   jumpTowardsPlayer(playerX, playerY) {
@@ -79,6 +81,11 @@ export default class AiPlayer extends Player {
 
     this.startCharge(direction);
     this.chargeLevel = chargeLevel;
-    this.jump();
+
+    // Random cooldown between 500ms and 1500ms before jumping
+    const jumpDelay = 500 + Math.random() * 1000;
+    this.scene.time.delayedCall(jumpDelay, () => {
+      this.jump();
+    });
   }
 }
