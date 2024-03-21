@@ -2,10 +2,11 @@
 import * as Phaser from "phaser";
 import { preloadGameSceneAssets } from "../lib/assets.js";
 import Player from "../entities/Player.js";
-import Platforms from "../entities/Platforms.js";
+import Platforms from "../entities/PlatformsManager.js";
 import HUD from "../entities/HUD.js";
-import PlayerCollisionManager from "../lib/CollisionManager.js";
+import CollisionManager from "../lib/CollisionManager.js";
 import ScoreState from "../lib/ScoreState.js";
+import FlagsManager from "../entities/FlagsManager.js";
 import { gameTime } from "../lib/constants.js";
 
 export default class GameScene extends Phaser.Scene {
@@ -31,16 +32,24 @@ export default class GameScene extends Phaser.Scene {
       this.cameras.main.height
     );
 
-    this.scoreState = new ScoreState(this);
-    this.hud = new HUD(this);
-    this.platforms = new Platforms(this);
-    this.platforms.createPlatforms();
-
     // Initialize two players with type 'p1' and 'p2'
     this.player1 = new Player(this, 100, 300, "blue");
     this.player2 = new Player(this, 700, 300, "green");
 
-    this.collisionManager = new PlayerCollisionManager(this, this.scoreState);
+    this.scoreState = new ScoreState(this, [this.player1, this.player2]);
+    this.hud = new HUD(this, [this.player1, this.player2]);
+    this.platforms = new Platforms(this);
+    this.platforms.createPlatforms();
+
+    // Initialize flags manager and create flags
+    this.flagsManager = new FlagsManager(this);
+    this.flagsManager.createFlags();
+
+    this.collisionManager = new CollisionManager(
+      this,
+      this.scoreState,
+      this.flagsManager
+    );
     this.collisionManager.setupBounds();
     this.collisionManager.setupCollisions();
 
@@ -80,12 +89,11 @@ export default class GameScene extends Phaser.Scene {
   }
 
   determineWinner() {
-    const { player1Score, player2Score } = this.scoreState.getScores();
-
+    const scores = this.scoreState.getScores();
     let winner;
-    if (player1Score > player2Score) {
+    if (scores[this.player1.type] > scores[this.player2.type]) {
       winner = "Player 1 Wins!";
-    } else if (player2Score > player1Score) {
+    } else if (scores[this.player2.type] > scores[this.player1.type]) {
       winner = "Player 2 Wins!";
     } else {
       winner = "It's a Tie!";

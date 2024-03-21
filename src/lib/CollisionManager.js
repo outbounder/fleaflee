@@ -1,12 +1,14 @@
 // lib/CollisionManager.js
 
 export default class CollisionManager {
-  constructor(scene, scoreState) {
+  constructor(scene, scoreState, flagsManager) {
     this.scene = scene;
     this.scoreState = scoreState;
+    this.flagsManager = flagsManager;
 
-    // Load score sound
+    // Load score sound and flag hit sound
     this.scoreSound = this.scene.sound.add("fleasHit");
+    this.flagHitSound = this.scene.sound.add("flagHit");
   }
 
   setupBounds() {
@@ -64,14 +66,22 @@ export default class CollisionManager {
       (other.label === "platform" ||
         other.label === "worldborder" ||
         other.label === "worldfloor" ||
-        other.label === "worldceiling")
+        other.label === "worldceiling" ||
+        other.label === "flag")
     ) {
-      if (other.label === "worldborder") {
+      if (other.label === "worldceiling") {
+        player.scheduleForce({ x: 0, y: 0.0005 });
+      } else if (other.label === "worldborder") {
         if (other.position.x > player.x) {
           player.scheduleForce({ x: -0.0005, y: 0 });
         } else {
           player.scheduleForce({ x: 0.0005, y: 0 });
         }
+      } else if (other.label === "flag") {
+        this.scoreState.addScore(player.type);
+        console.log(`${player.type} scores!`);
+        this.flagsManager.removeFlag(other.gameObject); // Remove the flag once collided
+        this.flagHitSound.play(); // Play flag hit sound
       } else {
         player.land(); // Resets the player's state as needed
       }
@@ -83,8 +93,8 @@ export default class CollisionManager {
     // Determine which player is on top
     const playerOnTop = player1.y < player2.y ? player1 : player2;
     if (currentTime - playerOnTop.lastScoreTime > 1000) {
-      const scorer = playerOnTop === player1 ? "player1" : "player2";
-      this.scoreState.addScore(scorer);
+      const scorer = playerOnTop === player1 ? player1 : player2;
+      this.scoreState.addScore(scorer.type);
       console.log(`${scorer} scores!`);
 
       playerOnTop.lastScoreTime = currentTime;

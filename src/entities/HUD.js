@@ -1,10 +1,10 @@
 // entities/HUD.js
-import * as Phaser from "phaser";
 import { gameTime } from "../lib/constants.js";
 
 export default class HUD {
-  constructor(scene) {
+  constructor(scene, players) {
     this.scene = scene;
+    this.players = players;
     this.initScoreTexts();
     this.scene.events.on("scoreUpdated", this.updateScore, this);
 
@@ -21,27 +21,27 @@ export default class HUD {
   }
 
   initScoreTexts() {
-    this.scoreTextPlayer1 = this.scene.add.text(16, 16, "Player 1 Score: 0", {
-      fontSize: "32px",
-      fill: "#000",
+    this.scoreTexts = {};
+    this.players.forEach((player, index) => {
+      const scoreTextX = index === 0 ? 16 : this.scene.cameras.main.width - 350; // Adjust based on the width of the text or desired margin
+      this.scoreTexts[player.type] = this.scene.add.text(
+        scoreTextX,
+        16,
+        `${player.type} Score: 0`,
+        {
+          fontSize: "32px",
+          fill: player.type,
+        }
+      );
     });
-
-    const scoreTextPlayer2X = this.scene.cameras.main.width - 350; // Adjust based on the width of the text or desired margin
-
-    this.scoreTextPlayer2 = this.scene.add.text(
-      scoreTextPlayer2X,
-      16,
-      "Player 2 Score: 0",
-      {
-        fontSize: "32px",
-        fill: "#0F0",
-      }
-    );
   }
 
-  updateScore(player1Score, player2Score) {
-    this.scoreTextPlayer1.setText("Player 1 Score: " + player1Score);
-    this.scoreTextPlayer2.setText("Player 2 Score: " + player2Score);
+  updateScore(scores) {
+    for (const playerType in scores) {
+      this.scoreTexts[playerType].setText(
+        `${playerType} Score: ${scores[playerType]}`
+      );
+    }
   }
 
   updateTime(time) {

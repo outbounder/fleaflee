@@ -1,26 +1,21 @@
 // lib/ScoreState.js
 export default class ScoreState {
-  constructor(scene) {
+  constructor(scene, players) {
     this.scene = scene;
-    this.player1Score = 0;
-    this.player2Score = 0;
+    this.scores = {};
+    this.players = players;
+    players.forEach((player) => {
+      this.scores[player.type] = 0;
+    });
   }
 
-  addScore(playerId) {
-    if (playerId === "player1") {
-      this.player1Score++;
-    } else if (playerId === "player2") {
-      this.player2Score++;
-    }
+  addScore(playerType) {
+    this.scores[playerType]++;
     // Emit an event with the updated scores
-    this.scene.events.emit(
-      "scoreUpdated",
-      this.player1Score,
-      this.player2Score
-    );
+    this.scene.events.emit("scoreUpdated", this.scores);
   }
 
   getScores() {
-    return { player1Score: this.player1Score, player2Score: this.player2Score };
+    return this.scores;
   }
 }

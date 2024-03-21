@@ -13,6 +13,10 @@ const gameSceneAssets = {
       name: "fleasHit",
       path: "sfx/sound_of_fleas_hitting_each_other_funky_1_sec_4.wav",
     },
+    {
+      name: "flagHit",
+      path: "sfx/collecting_coin_sound_in_a_game_4.wav",
+    },
   ],
 };
 

@@ -1,5 +1,6 @@
 // entities/player.js
 import * as Phaser from "phaser";
+import settings from "../lib/settings.js";
 
 export default class Player extends Phaser.Physics.Matter.Sprite {
   constructor(scene, x, y, type) {
@@ -14,10 +15,12 @@ export default class Player extends Phaser.Physics.Matter.Sprite {
     this.chargeLevel = 0;
     this.isCharging = false;
     this.isJumping = false;
+    this.jumpCount = 0; // Count of jumps made
     this.chargeDirection = "right";
     this.maxJumpSpeed = 0.02; // Adjusted for Matter.js force application
     this.scheduledForce = null; // used as buffer to apply force
     this.lastScoreTime = 0; // used to prevent multiple scoring
+    this.lastJumpDirection = null; // Track the last jump direction
 
     // Use the texture's frame to set the sprite's scale properly
     const texture = this.scene.textures.getFrame(
@@ -40,7 +43,6 @@ export default class Player extends Phaser.Physics.Matter.Sprite {
   }
 
   startCharge(direction) {
-    if (this.isJumping) return;
     this.isCharging = true;
     this.chargeDirection = direction;
     this.chargeLevel = 0;
@@ -48,8 +50,11 @@ export default class Player extends Phaser.Physics.Matter.Sprite {
   }
 
   charge() {
-    if (!this.isCharging || this.isJumping) return;
-    this.chargeLevel = Math.min(this.chargeLevel + 0.00025, this.maxJumpSpeed);
+    if (!this.isCharging) return;
+    this.chargeLevel = Math.min(
+      this.chargeLevel + 0.00125 * settings.getSpeedOfChargeMultiplyer(),
+      this.maxJumpSpeed
+    );
     const chargePercentage = this.chargeLevel / this.maxJumpSpeed;
 
     // Change texture based on charge level
@@ -61,17 +66,29 @@ export default class Player extends Phaser.Physics.Matter.Sprite {
   }
 
   jump() {
-    if (!this.isCharging) return;
+    if (
+      !this.isCharging ||
+      (this.isJumping &&
+        settings.getMultipleJumps() !== -1 &&
+        this.jumpCount >= settings.getMultipleJumps())
+    )
+      return; // do not initiate jump
     console.log("JUMP", this.type);
     const jumpDirection = this.chargeDirection === "left" ? -1 : 1;
+    let jumpForce = this.chargeLevel;
+    if (this.lastJumpDirection === this.chargeDirection) {
+      jumpForce /= 2; // Lower the jump force by 2 if jumping in the same direction
+    }
     this.applyForce({
-      x: jumpDirection * this.chargeLevel,
-      y: -this.chargeLevel,
+      x: jumpDirection * jumpForce,
+      y: -jumpForce,
     });
     this.setTexture("shape-characters", `${this.type}_body_square.png`);
     this.isCharging = false;
     this.chargeLevel = 0;
     this.isJumping = true;
+    this.jumpCount++; // Increment jump count
+    this.lastJumpDirection = this.chargeDirection; // Update the last jump direction
 
     this.jumpSound.play();
   }
@@ -80,7 +97,9 @@ export default class Player extends Phaser.Physics.Matter.Sprite {
     console.log("LAND", this.type);
     this.isJumping = false;
     this.chargeLevel = 0;
+    this.jumpCount = 0; // Reset jump count
     this.setTexture("shape-characters", `${this.type}_body_squircle.png`); // Reset to normal state
+    this.lastJumpDirection = null; // Reset the last jump direction
   }
 
   scheduleForce(force) {
