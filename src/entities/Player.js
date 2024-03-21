@@ -1,6 +1,9 @@
 // entities/player.js
 import * as Phaser from "phaser";
 import settings from "../lib/settings.js";
+import Trail from "./playerDecorators/trail.js";
+import Face from "./playerDecorators/face.js";
+import Hand from "./playerDecorators/hand.js";
 
 export default class Player extends Phaser.Physics.Matter.Sprite {
   constructor(scene, x, y, type) {
@@ -21,6 +24,7 @@ export default class Player extends Phaser.Physics.Matter.Sprite {
     this.scheduledForce = null; // used as buffer to apply force
     this.lastScoreTime = 0; // used to prevent multiple scoring
     this.lastJumpDirection = null; // Track the last jump direction
+    this.idleTime = 0; // Track the idle time of the player
 
     // Use the texture's frame to set the sprite's scale properly
     const texture = this.scene.textures.getFrame(
@@ -40,6 +44,15 @@ export default class Player extends Phaser.Physics.Matter.Sprite {
 
     // Load jump sound
     this.jumpSound = this.scene.sound.add("jump");
+
+    // Initialize face
+    this.face = new Face(scene, this);
+
+    // Initialize trail
+    this.trail = new Trail(scene, this);
+
+    // Initialize hand
+    this.hand = new Hand(scene, this);
   }
 
   startCharge(direction) {
@@ -91,6 +104,7 @@ export default class Player extends Phaser.Physics.Matter.Sprite {
     this.lastJumpDirection = this.chargeDirection; // Update the last jump direction
 
     this.jumpSound.play();
+    this.hand.hide();
   }
 
   land() {
@@ -100,6 +114,7 @@ export default class Player extends Phaser.Physics.Matter.Sprite {
     this.jumpCount = 0; // Reset jump count
     this.setTexture("shape-characters", `${this.type}_body_squircle.png`); // Reset to normal state
     this.lastJumpDirection = null; // Reset the last jump direction
+    this.idleTime = 0; // Reset idle time
   }
 
   scheduleForce(force) {
@@ -112,5 +127,28 @@ export default class Player extends Phaser.Physics.Matter.Sprite {
       this.scheduledForce = null;
     }
     if (this.isCharging) this.charge();
+
+    // Update trail
+    this.trail.update();
+
+    // Update the face
+    this.face.update();
+
+    // Update the hand
+    this.hand.update();
+
+    // Check if player is idle for too long
+    if (!this.isJumping) {
+      this.idleTime++;
+      if (this.idleTime > 100) {
+        // Show hand after 100 frames of idleness
+        this.hand.wave();
+        if (this.idleTime > 200) {
+          // Hide hand after 200 frames of idleness
+          this.hand.fist();
+          this.idleTime = 0;
+        }
+      }
+    }
   }
 }

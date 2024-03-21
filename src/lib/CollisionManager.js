@@ -92,12 +92,16 @@ export default class CollisionManager {
     const currentTime = Date.now();
     // Determine which player is on top
     const playerOnTop = player1.y < player2.y ? player1 : player2;
+    const playerOnBottom = playerOnTop === player1 ? player2 : player1;
     if (currentTime - playerOnTop.lastScoreTime > 1000) {
-      const scorer = playerOnTop === player1 ? player1 : player2;
+      const scorer = playerOnTop;
       this.scoreState.addScore(scorer.type);
-      console.log(`${scorer} scores!`);
+      console.log(`${scorer.type} scores!`);
 
       playerOnTop.lastScoreTime = currentTime;
+      playerOnTop.face.happy(); // Make the player on top happy
+      playerOnBottom.face.angry(); // Make the player on bottom angry
+      playerOnBottom.hand.fist(); // Make the player on top happy
     }
     playerOnTop.scheduleForce({ x: 0, y: -0.005 });
   }
