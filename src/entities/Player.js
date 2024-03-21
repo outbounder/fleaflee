@@ -1,9 +1,10 @@
 // entities/player.js
 import * as Phaser from "phaser";
 import settings from "../lib/settings.js";
-import Trail from "./playerDecorators/trail.js";
-import Face from "./playerDecorators/face.js";
-import Hand from "./playerDecorators/hand.js";
+
+import Hand from "./playerDecorators/Hand.js";
+import Trail from "./playerDecorators/Trail.js";
+import Face from "./playerDecorators/Face.js";
 
 export default class Player extends Phaser.Physics.Matter.Sprite {
   constructor(scene, x, y, type) {
