@@ -83,18 +83,17 @@ export default class GameScene extends Phaser.Scene {
   }
 
   determineWinner() {
-    const { player1Score, player2Score } = this.scoreState.getScores();
-
+    const scores = this.scoreState.getScores();
     let winner;
-    if (player1Score > player2Score) {
+    if (scores[this.player1.type] > scores[this.player2.type]) {
       winner = "Player 1 Wins!";
-    } else if (player2Score > player1Score) {
+    } else if (scores[this.player2.type] > scores[this.player1.type]) {
       winner = "Player 2 Wins!";
     } else {
       winner = "It's a Tie!";
     }
 
-    this.scene.start("EndScene", { winner, nextScene: "GameVsAiScene" }); // Pass the winner to the EndGameScene
+    this.scene.start("EndScene", { winner, nextScene: "HotSeatGameScene" }); // Pass the winner to the EndGameScene
   }
 
   update() {
